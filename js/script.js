@@ -5,7 +5,11 @@ const colorSelect = document.getElementById('color');
 const designSelect = document.getElementById('design');
 const colorOptions = document.getElementById('color').options;
 const activities = document.getElementById('activities');
-const activitiesCostP = document.getElementById('activities-cost'); 
+const activitiesCostP = document.getElementById('activities-cost');
+const creditCard = document.getElementById('credit-card');
+const paymentSelect = document.getElementById('payment');
+const paypal = document.getElementById('paypal');
+const bitcoin = document.getElementById('bitcoin');
 
 let TotalActivitiesCost = 0;
 
@@ -58,4 +62,20 @@ activities.addEventListener('change', (e) => {
         }
     }
     activitiesCostP.innerHTML = `Total: $ ${TotalActivitiesCost}`;
+});
+
+paymentSelect.addEventListener('change', () => {
+    if (paymentSelect.value === 'credit-card') {
+        creditCard.hidden = false;
+        paypal.hidden = true;
+        bitcoin.hidden = true;
+    } else if (paymentSelect.value === 'paypal') {
+        creditCard.hidden = true;
+        paypal.hidden = false;
+        bitcoin.hidden = true;
+    } else if (paymentSelect.value === 'bitcoin') {
+        creditCard.hidden = true;
+        paypal.hidden = true;
+        bitcoin.hidden = false;
+    }
 });
