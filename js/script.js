@@ -29,7 +29,7 @@ bitcoin.hidden = true;
 
 // validators
 function isValidName(name) {
-    return (name.length > 0);
+    return (name.trim().length > 0);
 }
 
 function isValidEmail(email) {
