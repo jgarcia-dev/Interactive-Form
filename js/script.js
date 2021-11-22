@@ -18,14 +18,14 @@ const confForm = document.querySelector('form');
 
 let TotalActivitiesCost = 0;
 
-
 // on form load
 nameInput.focus();
-otherJobInput.style.display = 'none';
+otherJobInput.hidden = true;
 colorSelect.disabled = true;
 paymentSelect.selectedIndex = 1;
 paypal.hidden = true;
 bitcoin.hidden = true;
+
 
 // validators
 function isValidName(name) {
@@ -73,12 +73,13 @@ function isValidPaymentInfo(element) {
     }
 }
 
+
 // event listeners
 jobRoleSelect.addEventListener('change', () => {
     if (jobRoleSelect.value === 'other') {
-        otherJobInput.style.display = 'inherit';
+        otherJobInput.hidden = false;
     } else {
-        otherJobInput.style.display = 'none';
+        otherJobInput.hidden = true;
     }
 });
 
@@ -87,21 +88,11 @@ designSelect.addEventListener('change', () => {
     colorSelect.selectedIndex = 0;
     colorSelect[0].innerHTML = 'Select a color below';
 
-    if (designSelect.value === 'js puns') {
-        for (option of colorOptions) {
-            if (option.getAttribute('data-theme') === 'js puns') {
-                option.hidden = false;
-            } else {
-                option.hidden = true;
-            }
-        }
-    } else if (designSelect.value === 'heart js') {
-        for (option of colorOptions) {
-            if (option.getAttribute('data-theme') === 'heart js') {
-                option.hidden = false;
-            } else {
-                option.hidden = true;
-            }
+    for (option of colorOptions) {
+        if (option.getAttribute('data-theme') === designSelect.value) {
+            option.hidden = false;
+        } else {
+            option.hidden = true;
         }
     }
 });
@@ -118,18 +109,14 @@ activities.addEventListener('change', (e) => {
 });
 
 paymentSelect.addEventListener('change', () => {
-    if (paymentSelect.value === 'credit-card') {
-        creditCard.hidden = false;
-        paypal.hidden = true;
-        bitcoin.hidden = true;
-    } else if (paymentSelect.value === 'paypal') {
-        creditCard.hidden = true;
-        paypal.hidden = false;
-        bitcoin.hidden = true;
-    } else if (paymentSelect.value === 'bitcoin') {
-        creditCard.hidden = true;
-        paypal.hidden = true;
-        bitcoin.hidden = false;
+    const paymentTypes = [creditCard, paypal, bitcoin];
+    
+    for (payment of paymentTypes) {
+        if (payment.id === paymentSelect.value) {
+            payment.hidden = false;
+        } else {
+            payment.hidden = true;
+        }
     }
 });
 
