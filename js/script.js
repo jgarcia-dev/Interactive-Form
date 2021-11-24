@@ -6,6 +6,7 @@ const colorSelect = document.getElementById('color');
 const designSelect = document.getElementById('design');
 const colorOptions = document.getElementById('color').options;
 const activities = document.getElementById('activities');
+const allActivities = activities.querySelectorAll('input');
 const activitiesCostP = document.getElementById('activities-cost');
 const creditCard = document.getElementById('credit-card');
 const paymentSelect = document.getElementById('payment');
@@ -16,7 +17,7 @@ const paypal = document.getElementById('paypal');
 const bitcoin = document.getElementById('bitcoin');
 const confForm = document.querySelector('form');
 
-let TotalActivitiesCost = 0;
+let selectedActivities = [];
 
 // on form load
 nameInput.focus();
@@ -25,6 +26,34 @@ colorSelect.disabled = true;
 paymentSelect.selectedIndex = 1;
 paypal.hidden = true;
 bitcoin.hidden = true;
+
+
+// helper functions
+function totalSelectedActivities() {
+    let total = 0;
+    selectedActivities.forEach(activity => {
+        total += parseFloat(activity.getAttribute('data-cost'));
+    });
+    return total;
+}
+
+function disableConflictingActivities(target) {
+    allActivities.forEach(activity => {
+        if (activity.getAttribute('data-day-and-time') === target.getAttribute('data-day-and-time') && activity.checked === false) {
+            activity.disabled = true;
+            activity.parentElement.classList.toggle('disabled');
+        }
+    });
+}
+
+function enableConflictingActivities(target) {
+    allActivities.forEach(activity => {
+        if (activity.getAttribute('data-day-and-time') === target.getAttribute('data-day-and-time') && activity.disabled === true) {
+            activity.disabled = false;
+            activity.parentElement.classList.toggle('disabled');
+        }
+    });
+}
 
 
 // validators
@@ -98,14 +127,19 @@ designSelect.addEventListener('change', () => {
 });
 
 activities.addEventListener('change', (e) => {
-    if (e.target.tagName === 'INPUT') {
-        if (e.target.checked === true) {
-            TotalActivitiesCost += parseFloat(e.target.getAttribute('data-cost'));
-        } else {
-            TotalActivitiesCost -= parseFloat(e.target.getAttribute('data-cost'));
+    const activity = e.target;
+
+    if (activity.checked === true) {
+        selectedActivities.push(activity);
+        disableConflictingActivities(activity);
+    } else if (activity.checked === false) {
+        const index = selectedActivities.indexOf(activity);
+        if (index > -1) {
+            selectedActivities.splice(index, 1);
+            enableConflictingActivities(activity);
         }
     }
-    activitiesCostP.innerHTML = `Total: $ ${TotalActivitiesCost}`;
+    activitiesCostP.innerHTML = `Total: $ ${totalSelectedActivities()}`;
 });
 
 paymentSelect.addEventListener('change', () => {
