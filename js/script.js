@@ -114,15 +114,26 @@ jobRoleSelect.addEventListener('change', () => {
 
 designSelect.addEventListener('change', () => {
     colorSelect.disabled = false;
-    colorSelect.selectedIndex = 0;
-    colorSelect[0].innerHTML = 'Select a color below';
+    const selectedTheme = designSelect.value;
 
-    for (option of colorOptions) {
-        if (option.getAttribute('data-theme') === designSelect.value) {
-            option.hidden = false;
-        } else {
-            option.hidden = true;
+    if (selectedTheme === 'js puns') {
+        for (option of colorOptions) {
+            if (option.getAttribute('data-theme') === selectedTheme) {
+                option.hidden = false;
+            } else {
+                option.hidden = true;
+            }
         }
+        colorSelect.selectedIndex = 1;
+    } else if (selectedTheme === 'heart js') {
+        for (option of colorOptions) {
+            if (option.getAttribute('data-theme') === selectedTheme) {
+                option.hidden = false;
+            } else {
+                option.hidden = true;
+            }
+        }
+        colorSelect.selectedIndex = 4;
     }
 });
 
