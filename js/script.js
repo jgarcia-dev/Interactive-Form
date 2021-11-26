@@ -38,18 +38,18 @@ function totalSelectedActivities() {
     return total;
 }
 
-function disableConflictingActivities(target) {
+function disableConflictingActivities(selectedActivity) {
     allActivities.forEach(activity => {
-        if (activity.getAttribute('data-day-and-time') === target.getAttribute('data-day-and-time') && activity.checked === false) {
+        if (activity.checked === false && activity.getAttribute('data-day-and-time') === selectedActivity.getAttribute('data-day-and-time')) {
             activity.disabled = true;
             activity.parentElement.classList.toggle('disabled');
         }
     });
 }
 
-function enableConflictingActivities(target) {
+function enableConflictingActivities(selectedActivity) {
     allActivities.forEach(activity => {
-        if (activity.getAttribute('data-day-and-time') === target.getAttribute('data-day-and-time') && activity.disabled === true) {
+        if (activity.disabled === true && activity.getAttribute('data-day-and-time') === selectedActivity.getAttribute('data-day-and-time')) {
             activity.disabled = false;
             activity.parentElement.classList.toggle('disabled');
         }
