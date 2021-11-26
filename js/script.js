@@ -29,6 +29,7 @@ bitcoin.hidden = true;
 
 
 // helper functions
+// =========================================================================
 function totalSelectedActivities() {
     let total = 0;
     selectedActivities.forEach(activity => {
@@ -57,6 +58,7 @@ function enableConflictingActivities(target) {
 
 
 // validators
+// =========================================================================
 function isValidName(name) {
     return (name.trim().length > 0);
 }
@@ -104,6 +106,9 @@ function isValidPaymentInfo(element) {
 
 
 // event listeners
+// =========================================================================
+
+// Basic Info section event listener
 jobRoleSelect.addEventListener('change', () => {
     if (jobRoleSelect.value === 'other') {
         otherJobInput.hidden = false;
@@ -112,6 +117,7 @@ jobRoleSelect.addEventListener('change', () => {
     }
 });
 
+// T-shirt Info section event listener
 designSelect.addEventListener('change', () => {
     colorSelect.disabled = false;
     const selectedTheme = designSelect.value;
@@ -137,6 +143,7 @@ designSelect.addEventListener('change', () => {
     }
 });
 
+// Register for Activities section event listener
 activities.addEventListener('change', (e) => {
     const activity = e.target;
 
@@ -153,6 +160,7 @@ activities.addEventListener('change', (e) => {
     activitiesCostP.innerHTML = `Total: $ ${totalSelectedActivities()}`;
 });
 
+// Payment Info section event listener
 paymentSelect.addEventListener('change', () => {
     const paymentTypes = [creditCard, paypal, bitcoin];
     
@@ -165,6 +173,7 @@ paymentSelect.addEventListener('change', () => {
     }
 });
 
+// Form Validation event listener
 confForm.addEventListener('submit', (e)=> {
     
     let isFormValid = isValidName(nameInput.value) &&
