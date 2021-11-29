@@ -160,6 +160,14 @@ activities.addEventListener('change', (e) => {
     activitiesCostP.innerHTML = `Total: $ ${totalSelectedActivities()}`;
 });
 
+activities.addEventListener('focus', (e)=> {
+    e.target.parentElement.classList.add('focus');
+}, true);
+
+activities.addEventListener('blur', (e)=> {
+    e.target.parentElement.classList.remove('focus');
+}, true);
+
 // Payment Info section event listener
 paymentSelect.addEventListener('change', () => {
     const paymentTypes = [creditCard, paypal, bitcoin];
