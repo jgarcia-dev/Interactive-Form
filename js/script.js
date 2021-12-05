@@ -5,8 +5,7 @@ const jobRoleSelect = document.getElementById('title');
 const colorSelect = document.getElementById('color');
 const designSelect = document.getElementById('design');
 const colorOptions = document.getElementById('color').options;
-const activities = document.getElementById('activities');
-const allActivities = activities.querySelectorAll('input');
+const activitiesFieldset = document.getElementById('activities');
 const activitiesCostP = document.getElementById('activities-cost');
 const creditCard = document.getElementById('credit-card');
 const paymentSelect = document.getElementById('payment');
@@ -17,7 +16,6 @@ const paypal = document.getElementById('paypal');
 const bitcoin = document.getElementById('bitcoin');
 const confForm = document.querySelector('form');
 
-let selectedActivities = [];
 
 // on form load
 nameInput.focus();
@@ -30,30 +28,36 @@ bitcoin.hidden = true;
 
 // helper functions
 // =========================================================================
-function totalSelectedActivities() {
+function totalSelectedActivities(activities) {
     let total = 0;
-    selectedActivities.forEach(activity => {
+    for (activity of activities) {
+        if (activity.checked === true) {
         total += parseFloat(activity.getAttribute('data-cost'));
-    });
+        }
+    }
     return total;
 }
 
-function disableConflictingActivities(selectedActivity) {
-    allActivities.forEach(activity => {
-        if (activity.checked === false && activity.getAttribute('data-day-and-time') === selectedActivity.getAttribute('data-day-and-time')) {
-            activity.disabled = true;
-            activity.parentElement.classList.toggle('disabled');
+function enableTimeConflicts(selectedActivity, allActivities) {
+    for (activity of allActivities) {
+        if (activity.disabled === true) {
+            if (activity.getAttribute('data-day-and-time') === selectedActivity.getAttribute('data-day-and-time')) {
+                activity.disabled = false;
+                activity.parentElement.classList.toggle('disabled');
+            }
         }
-    });
+    }
 }
 
-function enableConflictingActivities(selectedActivity) {
-    allActivities.forEach(activity => {
-        if (activity.disabled === true && activity.getAttribute('data-day-and-time') === selectedActivity.getAttribute('data-day-and-time')) {
-            activity.disabled = false;
-            activity.parentElement.classList.toggle('disabled');
+function disableTimeConflicts(selectedActivity, allActivities) {
+    for (activity of allActivities) {
+        if (activity.checked === false) {
+            if (activity.getAttribute('data-day-and-time') === selectedActivity.getAttribute('data-day-and-time')) {
+                activity.disabled = true;
+                activity.parentElement.classList.toggle('disabled');
+            }
         }
-    });
+    }
 }
 
 function showErrors(iconElement, hintElement, errorMgsArr = []) {
@@ -199,28 +203,25 @@ designSelect.addEventListener('change', () => {
     }
 });
 
-// Register for Activities section event listener
-activities.addEventListener('change', (e) => {
-    const activity = e.target;
+// Register for Activities section event listeners
+activitiesFieldset.addEventListener('change', (e) => {
+    const currActivity = e.target;
+    const allActivities = activities.querySelectorAll('input');
 
-    if (activity.checked === true) {
-        selectedActivities.push(activity);
-        disableConflictingActivities(activity);
-    } else if (activity.checked === false) {
-        const index = selectedActivities.indexOf(activity);
-        if (index > -1) {
-            selectedActivities.splice(index, 1);
-            enableConflictingActivities(activity);
-        }
+    if (currActivity.checked) {
+        disableTimeConflicts(currActivity, allActivities);
+    } else {
+        enableTimeConflicts(currActivity, allActivities);
     }
-    activitiesCostP.innerHTML = `Total: $ ${totalSelectedActivities()}`;
+
+    activitiesCostP.innerHTML = `Total: $ ${totalSelectedActivities(allActivities)}`;
 });
 
-activities.addEventListener('focus', (e)=> {
+activitiesFieldset.addEventListener('focus', (e)=> {
     e.target.parentElement.classList.add('focus');
 }, true);
 
-activities.addEventListener('blur', (e)=> {
+activitiesFieldset.addEventListener('blur', (e)=> {
     e.target.parentElement.classList.remove('focus');
 }, true);
 
