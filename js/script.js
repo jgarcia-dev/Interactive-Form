@@ -56,6 +56,20 @@ function enableConflictingActivities(selectedActivity) {
     });
 }
 
+function showErrors(iconElement, hintElement, errorMgsArr = []) {
+    iconElement.classList.add('not-valid');
+    iconElement.classList.remove('valid');
+    hintElement.classList.remove('hint');
+    if (errorMgsArr.length > 0) {
+        hintElement.innerText = `Errors: ${errorMgsArr.join(', ')}`;
+    }
+}
+
+function resolveErrors(iconElement, hintElement) {
+    iconElement.classList.remove('not-valid');
+    iconElement.classList.add('valid');
+    hintElement.classList.add('hint');
+}
 
 // validators
 // =========================================================================
@@ -63,8 +77,25 @@ function isValidName(name) {
     return (name.trim().length > 0);
 }
 
-function isValidEmail(email) {
-    return /^\w+\@\w+\.com$/.test(email);
+function getEmailErrors(email) {
+    const isEmailUserNameValid = /^(\w+)/.test(email);
+    const isAtSymbolPresent = /\@/.test(email);
+    const isEmailDomainValid = /(\w+)\.(com)$/.test(email);
+    const emailErrors = [];
+
+    if (isEmailUserNameValid === false) {
+        emailErrors.push('invalid username');
+    }
+
+    if (isAtSymbolPresent === false) {
+        emailErrors.push('missing @ symbol');
+    }
+
+    if (isEmailDomainValid === false) {
+        emailErrors.push('invalid email domain');
+    }
+
+    return emailErrors;
 }
 
 function registeredForActivities(element) {
@@ -107,6 +138,31 @@ function isValidPaymentInfo(element) {
 
 // event listeners
 // =========================================================================
+nameInput.addEventListener('keyup', ()=> {
+    const name = nameInput.value;
+    const iconElement = nameInput.parentElement;
+    const hintElement = nameInput.nextElementSibling;
+    
+    if (isValidName(name)) {
+        resolveErrors(iconElement, hintElement);
+    } else {
+        showErrors(iconElement, hintElement);
+    }
+});
+
+emailInput.addEventListener('keyup', ()=> {
+    const email = emailInput.value;
+    const iconElement = emailInput.parentElement;
+    const hintElement = emailInput.nextElementSibling;
+
+    const emailErrors = getEmailErrors(email);
+
+    if (emailErrors.length === 0) {
+        resolveErrors(iconElement, hintElement);
+    } else {
+        showErrors(iconElement, hintElement, emailErrors);
+    }
+});
 
 // Basic Info section event listener
 jobRoleSelect.addEventListener('change', () => {
