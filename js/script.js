@@ -102,11 +102,9 @@ function getEmailErrors(email) {
     return emailErrors;
 }
 
-function registeredForActivities(element) {
-    const checkboxes = element.getElementsByTagName('input');
-    
-    for (box of checkboxes) {
-        if (box.checked === true) {
+function atLeastOnActivitySelected(allActivities) {
+    for (activity of allActivities) {
+        if (activity.checked) {
             return true;
         }
     }
@@ -206,7 +204,9 @@ designSelect.addEventListener('change', () => {
 // Register for Activities section event listeners
 activitiesFieldset.addEventListener('change', (e) => {
     const currActivity = e.target;
-    const allActivities = activities.querySelectorAll('input');
+    const iconElement = activitiesFieldset;
+    const hintElement = activitiesFieldset.lastElementChild;
+    const allActivities = activitiesFieldset.querySelectorAll('input');
 
     if (currActivity.checked) {
         disableTimeConflicts(currActivity, allActivities);
@@ -215,6 +215,12 @@ activitiesFieldset.addEventListener('change', (e) => {
     }
 
     activitiesCostP.innerHTML = `Total: $ ${totalSelectedActivities(allActivities)}`;
+
+    if (atLeastOnActivitySelected(allActivities)) {
+        resolveErrors(iconElement, hintElement);
+    } else {
+        showErrors(iconElement, hintElement);
+    }
 });
 
 activitiesFieldset.addEventListener('focus', (e)=> {
