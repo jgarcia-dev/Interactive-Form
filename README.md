@@ -1,12 +1,10 @@
 # Interactive-Form
 Project 3 for Treehouse Full Stack JavaScript Techdegree
- 
- JavaScript enhanced interactive registration form.
 
-### Description:
+## Description:
 An interactive form that uses JavaScript to enhance interactivity and perform validation. Form provides helpful error messages when the user interacts with the form.
 
-### Technologies used:
+## Technologies used:
 - HTML
 - CSS
 - JavaScript
