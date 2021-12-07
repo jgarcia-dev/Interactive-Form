@@ -1,5 +1,6 @@
 # Interactive-Form
 Project 3 for Treehouse Full Stack JavaScript Techdegree
+JavaScript enhanced interactive registration form.
 
 ## Description:
 An interactive form that uses JavaScript to enhance interactivity and perform validation. Form provides helpful error messages when the user interacts with the form.
@@ -9,7 +10,7 @@ An interactive form that uses JavaScript to enhance interactivity and perform va
 - CSS
 - JavaScript
 
-### Real-time error messages
+## Real-time error messages
 - Basic Info Section
   - Name input - Name field cannot be blank
 
@@ -20,7 +21,7 @@ An interactive form that uses JavaScript to enhance interactivity and perform va
   - ZipCode - Zip Code must be 5 digits
   - CVV - CVV must be 3 digits
 
- ### Conditional error messages for email input
+ ## Conditional error messages for email input
  -	User will receive error message as to which part of email address is formatted incorrectly
    - Conditional errors based on user email input
      - invalid username
