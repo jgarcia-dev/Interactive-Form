@@ -394,7 +394,7 @@ confForm.addEventListener('submit', (e)=> {
         alert('Your form has been submitted');
     } 
     else {   
+        // form failed to submit
         e.preventDefault();
-        console.log('Form is incomplete')
     }
 });
