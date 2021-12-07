@@ -9,9 +9,11 @@ const activitiesFieldset = document.getElementById('activities');
 const activitiesCostP = document.getElementById('activities-cost');
 const creditCard = document.getElementById('credit-card');
 const paymentSelect = document.getElementById('payment');
-const ccNum = document.getElementById('cc-num');
-const zipNum = document.getElementById('zip');
-const cvvNum = document.getElementById('cvv');
+const expMonth = document.getElementById('exp-month');
+const expYear = document.getElementById('exp-year');
+const ccNumInput = document.getElementById('cc-num');
+const zipNumInput = document.getElementById('zip');
+const cvvNumInput = document.getElementById('cvv');
 const paypal = document.getElementById('paypal');
 const bitcoin = document.getElementById('bitcoin');
 const confForm = document.querySelector('form');
@@ -26,7 +28,7 @@ paypal.hidden = true;
 bitcoin.hidden = true;
 
 
-// helper functions
+// HELPER FUNCTIONS
 // =========================================================================
 function totalSelectedActivities(activities) {
     let total = 0;
@@ -60,114 +62,213 @@ function disableTimeConflicts(selectedActivity, allActivities) {
     }
 }
 
-function showErrors(iconElement, hintElement, errorMgsArr = []) {
-    iconElement.classList.add('not-valid');
-    iconElement.classList.remove('valid');
-    hintElement.classList.remove('hint');
+function showErrors(warnElement, hintElement = undefined, errorMgsArr = []) {
+    warnElement.classList.add('not-valid');
+    warnElement.classList.remove('valid');
+    if (hintElement) {
+        hintElement.classList.remove('hint');
+    }
     if (errorMgsArr.length > 0) {
         hintElement.innerText = `Errors: ${errorMgsArr.join(', ')}`;
     }
 }
 
-function resolveErrors(iconElement, hintElement) {
-    iconElement.classList.remove('not-valid');
-    iconElement.classList.add('valid');
-    hintElement.classList.add('hint');
+function resolveErrors(warnElement, hintElement = undefined) {
+    warnElement.classList.remove('not-valid');
+    warnElement.classList.add('valid');
+    if (hintElement) {
+        hintElement.classList.add('hint');
+    }
 }
 
-// validators
+
+// VALIDATION FUNCTIONS
 // =========================================================================
-function isValidName(name) {
-    return (name.trim().length > 0);
+
+// returns boolean result of validation
+// shows errors messages if validation fails, otherwise resolves them
+function isValidNameInput(element) {
+    const name = element.value.trim();
+    const warningElement = element.parentElement;
+    const hintElement = element.nextElementSibling;
+
+    const isValidName = name.length > 0;
+    
+    if (isValidName) {
+        resolveErrors(warningElement, hintElement);
+        return true;
+    } else {
+        showErrors(warningElement, hintElement);
+        return false;
+    }
 }
 
-function getEmailErrors(email) {
-    const isEmailUserNameValid = /^(\w+)/.test(email);
-    const isAtSymbolPresent = /\@/.test(email);
-    const isEmailDomainValid = /(\w+)\.(com)$/.test(email);
+// returns boolean result of validation
+// shows errors messages if validation fails, otherwise resolves them
+// error messages vary depending on what input is missing
+function isValidEmailInput(element) {
+    const email = element.value;
+    const warningElement = emailInput.parentElement;
+    const hintElement = emailInput.nextElementSibling;
     const emailErrors = [];
 
-    if (isEmailUserNameValid === false) {
+    const isValidEmailUserName = /^(\w+)/.test(email);
+    const isAtSymbolInEmail = /\@/.test(email);
+    const isValidEmailDomain = /(\w+)\.(com)$/.test(email);
+
+    if (isValidEmailUserName === false) {
         emailErrors.push('invalid username');
     }
 
-    if (isAtSymbolPresent === false) {
+    if (isAtSymbolInEmail === false) {
         emailErrors.push('missing @ symbol');
     }
 
-    if (isEmailDomainValid === false) {
+    if (isValidEmailDomain === false) {
         emailErrors.push('invalid email domain');
     }
 
-    return emailErrors;
-}
+    if (emailErrors.length === 0) {
+        resolveErrors(warningElement, hintElement);
+        return true;
+    } else {
+        showErrors(warningElement, hintElement, emailErrors);
+        return false;
+    }
+} 
 
-function atLeastOnActivitySelected(allActivities) {
-    for (activity of allActivities) {
+// returns boolean result of validation
+// shows errors messages if validation fails, otherwise resolves them
+function isActivitySelected(element) {
+    const warnElement = element;
+    const hintElement = element.lastElementChild;
+    const activities = element.querySelectorAll('input');
+
+    for (activity of activities) {
         if (activity.checked) {
+            resolveErrors(warnElement, hintElement);
             return true;
         }
     }
+    
+    showErrors(warnElement, hintElement);
     return false;
 }
 
-function isValidCreditCardNumber(ccNumber) {
-    return /^[0-9]{13,16}$/.test(ccNumber);
-}
+// returns boolean result of validation
+// shows errors messages if validation fails, otherwise resolves them
+function isValidExpSelection(element) {
+    const warnElement = element.parentElement;
 
-function isValidZipCode(zipNumber) {
-    return /^[0-9]{5}$/.test(zipNumber);
-}
-
-function isValidCVV(cvvNum) {
-    return /^[0-9]{3}/.test(cvvNum);
-}
-
-function isValidPaymentInfo(element) {
-    if (element.value === 'credit-card' &&
-            isValidCreditCardNumber(ccNum.value) &&
-            isValidZipCode(zipNum.value) &&
-            isValidCVV(cvvNum.value)
-    ) {
+    if (element.selectedIndex > 0) {
+        resolveErrors(warnElement);
         return true;
-    } else if (element.value === 'paypal' || element.value === 'bitcoin') {
+    } else {
+        showErrors(warnElement);
+        return false;
+    }
+}
+
+// returns boolean result of validation
+// shows errors messages if validation fails, otherwise resolves them
+function isValidCreditCardInput(element) {
+    const ccNum = element.value;
+    const warningElement = element.parentElement;
+    const hintElement = element.nextElementSibling;
+
+    const isValidCCNum = /^[0-9]{13,16}$/.test(ccNum);
+    
+    if (isValidCCNum) {
+        resolveErrors(warningElement, hintElement);
         return true;
+    } else {
+        showErrors(warningElement, hintElement);
+        return false;
+    }
+}
+
+// returns boolean result of validation
+// shows errors messages if validation fails, otherwise resolves them
+function isValidZipCodeInput(element) {
+    const zipNum = element.value;
+    const warningElement = element.parentElement;
+    const hintElement = element.nextElementSibling;
+
+    const isValidZipCode = /^[0-9]{5}$/.test(zipNum);
+    
+    if (isValidZipCode) {
+        resolveErrors(warningElement, hintElement);
+        return true;
+    } else {
+        showErrors(warningElement, hintElement);
+        return false;
+    }
+}
+
+// returns boolean result of validation
+// shows errors messages if validation fails, otherwise resolves them
+function isValidCvvInput(element) {
+    const cvvNum = element.value;
+    const warningElement = element.parentElement;
+    const hintElement = element.nextElementSibling;
+
+    const isValidCvvNum = /^[0-9]{3}$/.test(cvvNum);
+    
+    if (isValidCvvNum) {
+        resolveErrors(warningElement, hintElement);
+        return true;
+    } else {
+        showErrors(warningElement, hintElement);
+        return false;
+    }
+}
+
+// returns true if correct payment type and its corresponding inputs are valid
+function isPaymentInfoCorrect(element) {
+    const paymentType = element.value;
+
+    if (paymentType === 'credit-card') {
+        const isExpMonthSelected = isValidExpSelection(expMonth),
+              isExpYearSelected = isValidExpSelection(expYear),
+              isCCNumValid = isValidCreditCardInput(ccNumInput),
+              isZipCodeValid = isValidZipCodeInput(zipNumInput),
+              isCvvValid = isValidCvvInput(cvvNumInput);
+
+        const isCCPaymentInfoCorrect = isExpMonthSelected && isExpYearSelected && isCCNumValid && isZipCodeValid && isCvvValid;
+
+        if (isCCPaymentInfoCorrect) {
+            return true;
+        } else {
+            return false;
+        }
+    } else if (paymentType === 'paypal' || paymentType === 'bitcoin') {
+        return true
     } else {
         return false;
     }
 }
 
 
-// event listeners
+// EVENT LISTENERS
 // =========================================================================
+
+// Basic Info section event listeners 
+// ===================================
 nameInput.addEventListener('keyup', ()=> {
-    const name = nameInput.value;
-    const iconElement = nameInput.parentElement;
-    const hintElement = nameInput.nextElementSibling;
-    
-    if (isValidName(name)) {
-        resolveErrors(iconElement, hintElement);
-    } else {
-        showErrors(iconElement, hintElement);
-    }
+    isValidNameInput(nameInput);
+});
+
+nameInput.addEventListener('blur', ()=> {
+    isValidNameInput(nameInput);
 });
 
 emailInput.addEventListener('keyup', ()=> {
-    const email = emailInput.value;
-    const iconElement = emailInput.parentElement;
-    const hintElement = emailInput.nextElementSibling;
-
-    const emailErrors = getEmailErrors(email);
-
-    if (emailErrors.length === 0) {
-        resolveErrors(iconElement, hintElement);
-    } else {
-        showErrors(iconElement, hintElement, emailErrors);
-    }
+    isValidEmailInput(emailInput);
 });
 
-// Basic Info section event listener
 jobRoleSelect.addEventListener('change', () => {
+
+    // show or hide other job based on job role
     if (jobRoleSelect.value === 'other') {
         otherJobInput.hidden = false;
     } else {
@@ -175,11 +276,14 @@ jobRoleSelect.addEventListener('change', () => {
     }
 });
 
-// T-shirt Info section event listener
+
+// T-shirt Info section event listener 
+// ===================================
 designSelect.addEventListener('change', () => {
     colorSelect.disabled = false;
     const selectedTheme = designSelect.value;
 
+    // change shirt color options based on selected theme
     if (selectedTheme === 'js puns') {
         for (option of colorOptions) {
             if (option.getAttribute('data-theme') === selectedTheme) {
@@ -201,11 +305,11 @@ designSelect.addEventListener('change', () => {
     }
 });
 
+
 // Register for Activities section event listeners
+// ===============================================
 activitiesFieldset.addEventListener('change', (e) => {
     const currActivity = e.target;
-    const iconElement = activitiesFieldset;
-    const hintElement = activitiesFieldset.lastElementChild;
     const allActivities = activitiesFieldset.querySelectorAll('input');
 
     if (currActivity.checked) {
@@ -216,11 +320,7 @@ activitiesFieldset.addEventListener('change', (e) => {
 
     activitiesCostP.innerHTML = `Total: $ ${totalSelectedActivities(allActivities)}`;
 
-    if (atLeastOnActivitySelected(allActivities)) {
-        resolveErrors(iconElement, hintElement);
-    } else {
-        showErrors(iconElement, hintElement);
-    }
+    isActivitySelected(activitiesFieldset);
 });
 
 activitiesFieldset.addEventListener('focus', (e)=> {
@@ -231,32 +331,70 @@ activitiesFieldset.addEventListener('blur', (e)=> {
     e.target.parentElement.classList.remove('focus');
 }, true);
 
-// Payment Info section event listener
+
+// Payment Info section event listeners
+// ====================================
 paymentSelect.addEventListener('change', () => {
-    const paymentTypes = [creditCard, paypal, bitcoin];
+    const paymentElements = [creditCard, paypal, bitcoin]
+    const SelectedPaymentType = paymentSelect.value;
     
-    for (payment of paymentTypes) {
-        if (payment.id === paymentSelect.value) {
-            payment.hidden = false;
+    // hide payments types not selected
+    for (element of paymentElements) {
+        if (element.id === SelectedPaymentType) {
+            element.hidden = false;
         } else {
-            payment.hidden = true;
+            element.hidden = true;
         }
     }
 });
 
+expMonth.addEventListener('change', ()=> {
+    isValidExpSelection(expMonth);
+});
+
+expMonth.addEventListener('blur', ()=> {
+    isValidExpSelection(expMonth);
+});
+
+expYear.addEventListener('change', ()=> {
+    isValidExpSelection(expYear);
+});
+
+expYear.addEventListener('blur', ()=> {
+    isValidExpSelection(expYear);
+})
+
+ccNumInput.addEventListener('keyup', ()=> {
+    isValidCreditCardInput(ccNumInput);
+});
+
+zipNumInput.addEventListener('keyup', ()=> {
+    isValidZipCodeInput(zipNumInput)
+});
+
+cvvNumInput.addEventListener('keyup', ()=> {
+    isValidCvvInput(cvvNumInput);
+});
+
+
 // Form Validation event listener
-confForm.addEventListener('submit', (e)=> {
-    
-    let isFormValid = isValidName(nameInput.value) &&
-        isValidEmail(emailInput.value) &&
-        registeredForActivities(activities) &&
-        isValidPaymentInfo(paymentSelect);
-    
+// ==============================
+confForm.addEventListener('submit', (e)=> {   
+    const isFormNameValid = isValidNameInput(nameInput),
+          isFormEmailValid = isValidEmailInput(emailInput),
+          isFormActivitySelected = isActivitySelected(activitiesFieldset),
+          isFormPaymentCorrect = isPaymentInfoCorrect(paymentSelect);
+
+    const isFormValid = isFormNameValid &&
+                        isFormEmailValid &&
+                        isFormActivitySelected &&
+                        isFormPaymentCorrect;
+
     if (isFormValid) {
         alert('Your form has been submitted');
     } 
     else {   
         e.preventDefault();
-        alert('Your form is incomplete')
+        console.log('Form is incomplete')
     }
 });
